@@ -137,6 +137,18 @@ with st.sidebar:
 
 # --- FILTROS E TABELA PRINCIPAL ---
 if 'df_master' in st.session_state:
+    st.markdown("""
+    <div style="display: flex; gap: 15px; background: #1e293b; padding: 10px; border-radius: 8px; border: 1px solid #334155; margin-bottom: 15px; color:#38bdf8">
+        <div style="font-size: 12px;">
+            <b>IA Sentimento:</b> 
+            <span style="color: #4ade80;">● 75–100 Positivo</span> | 
+            <span style="color: #fbbf24;">● 51–74 Neutro</span> | 
+            <span style="color: #f87171;">● 0–50 Risco</span>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+if 'df_master' in st.session_state:
     df_f = st.session_state['df_master'].copy()
     
     col_f1, col_f2 = st.columns(2)
@@ -156,3 +168,4 @@ if 'df_master' in st.session_state:
     components.html(gerar_html_string(df_f), height=1000, scrolling=True)
 else:
     st.info("👈 Clique em 'Atualizar B3' para começar.")
+
