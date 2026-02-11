@@ -6,10 +6,11 @@ import time
 from coletor import obter_dados_b3
 from score_acoes import ScoreAcoes
 from sentiment_engine import SentimentEngine
-import streamlit as st
+
+# --- CONFIGURAÇÃO DA PÁGINA ---
+st.set_page_config(page_title="Radar Ticker IA", layout="wide")
 
 st.title("📈 Ticker")
-
 
 warnings.filterwarnings("ignore", category=FutureWarning)
 
@@ -54,7 +55,7 @@ def gerar_html_string(df):
         body { font-family: 'Inter', sans-serif; background: #0f172a; color: #f1f5f9; }
         .container { background: #1e293b; border-radius: 12px; padding: 15px; }
         table.dataTable { background: #1e293b !important; color: #cbd5e1 !important; border: none !important; width: 100% !important; }
-        th { background: #0f172a !important; color: #38bdf8 !important; font-size: 10px; text-transform: uppercase; }
+        th { background: #0f172a !important; color: #38bdf8 !important; font-size: 10px; text-transform: uppercase; white-space: nowrap; }
         td { border-bottom: 1px solid #334155 !important; font-size: 11px; text-align: center; padding: 8px !important; }
         .status-FORTE { background: #e11d48; color: white; padding: 3px 8px; border-radius: 4px; font-weight: bold; }
         .status-COMPRA { background: #2563eb; color: white; padding: 3px 8px; border-radius: 4px; }
@@ -62,15 +63,17 @@ def gerar_html_string(df):
         .bg-vermelho { background: rgba(248, 113, 113, 0.2) !important; color: #f87171 !important; }
         .m-pos { color: #4ade80; font-weight: bold; }
         .m-neg { color: #f87171; }
-        .g-highlight { background: rgba(56, 189, 248, 0.05) !important; border-left: 1px solid #334155; border-right: 1px solid #334155; }
+        .g-highlight { background: rgba(56, 189, 248, 0.07) !important; border-left: 1px solid #334155 !important; border-right: 1px solid #334155 !important; }
         small { font-size: 9px; display: block; line-height: 1.1; }
         .fire-icon { color: #f59e0b; margin-right: 4px; }
     </style>
     """
     html = f"<html><head><meta charset='UTF-8'><link rel='stylesheet' type='text/css' href='https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css'>{css}</head><body>"
+    
+    # Cabeçalho atualizado com os labels de Gordon por extenso
     html += """<div class='container'><table><thead><tr>
                 <th>Papel</th><th>Preço</th><th>DY %</th><th>Graham</th><th>Bazin</th>
-                <th>G. Apertado</th><th class='g-highlight'>G. Equilibrado</th><th>G. Otimista</th>
+                <th>Gordon (Apert.)</th><th class='g-highlight'>Gordon (Equil.)</th><th>Gordon (Otim.)</th>
                 <th>IA Sentimento</th><th>Magic</th><th>Status</th>
             </tr></thead><tbody>"""
     
@@ -106,16 +109,14 @@ def gerar_html_string(df):
     html += "<script>$(document).ready(function(){$('table').DataTable({'pageLength': 25, 'scrollX': true, 'order': [[10, 'asc']]});});</script></body></html>"
     return html
 
-# --- STREAMLIT UI ---
-st.set_page_config(page_title="Radar Ticker IA", layout="wide")
-
+# --- SIDEBAR CONTROLS ---
 with st.sidebar:
     st.header("⚙️ Controle Ticker")
     if st.button('🔄 1. ATUALIZAR B3'):
         dados = obter_dados_b3()
         if not dados.empty:
             df_limpo = limpar_e_reconstruir(dados)
-            # Aqui o ScoreEngine já deve estar com a versão de 3 Gordons que te mandei
+            # Processamento do Score das Ações
             analisados = [ScoreAcoes.evaluate(row.to_dict()) for _, row in df_limpo.iterrows()]
             st.session_state['df_master'] = pd.DataFrame(analisados)
 
@@ -132,8 +133,9 @@ with st.sidebar:
                     st.session_state['df_master'].at[idx, 'ia_score'] = score
                     st.session_state['df_master'].at[idx, 'ia_resumo'] = resumo
                     st.toast(f"{ticker_ia} atualizado!")
+                    st.rerun()
 
-# --- EXIBIÇÃO COM FILTROS ATIVOS ---
+# --- FILTROS E TABELA PRINCIPAL ---
 if 'df_master' in st.session_state:
     df_f = st.session_state['df_master'].copy()
     
@@ -144,7 +146,7 @@ if 'df_master' in st.session_state:
         opcoes_status = sorted(df_f['status'].unique().tolist())
         status_sel = st.multiselect("Filtrar por Status:", opcoes_status, default=[s for s in ["FORTE COMPRA", "COMPRA"] if s in opcoes_status])
 
-    # Aplicando a lógica de filtro antes de enviar para o HTML
+    # Filtros lógicos
     if so_queridinhas:
         df_f = df_f[df_f['queridinha'] == "SIM"]
     

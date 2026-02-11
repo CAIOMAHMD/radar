@@ -29,7 +29,7 @@ class ScoreAcoes:
 
         # --- 2. DÉCIO BAZIN ---
         div_anual = price * (dy / 100)
-        p_bazin = div_anual / 0.06 if dy > 0 else 0
+        p_bazin = div_anual / 0.10 if dy > 0 else 0
         m_b = ((p_bazin / price) - 1) * 100 if p_bazin > 0 else 0
         m_bazin_txt = f"{'+' if m_b > 0 else ''}{m_b:.1f}%" if p_bazin > 0 else "---"
 
