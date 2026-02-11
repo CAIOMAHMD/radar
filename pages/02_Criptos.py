@@ -1,10 +1,13 @@
 import streamlit as st
 import pandas as pd
 import yfinance as yf
+import streamlit as st
+
+st.title("💰 Criptos")
+
 
 st.set_page_config(page_title="Radar Cripto", layout="wide")
 
-st.title("🚀 Radar de Criptomoedas")
 st.markdown("Monitoramento em tempo real das principais moedas do mercado.")
 
 # Lista das "Queridinhas" do mercado cripto

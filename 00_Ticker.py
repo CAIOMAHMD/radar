@@ -6,6 +6,10 @@ import time
 from coletor import obter_dados_b3
 from score_acoes import ScoreAcoes
 from sentiment_engine import SentimentEngine
+import streamlit as st
+
+st.title("📈 Ticker")
+
 
 warnings.filterwarnings("ignore", category=FutureWarning)
 
@@ -103,10 +107,10 @@ def gerar_html_string(df):
     return html
 
 # --- STREAMLIT UI ---
-st.set_page_config(page_title="Radar Ações IA", layout="wide")
+st.set_page_config(page_title="Radar Ticker IA", layout="wide")
 
 with st.sidebar:
-    st.header("⚙️ Controle Ações")
+    st.header("⚙️ Controle Ticker")
     if st.button('🔄 1. ATUALIZAR B3'):
         dados = obter_dados_b3()
         if not dados.empty:

@@ -11,7 +11,9 @@ except:
 genai.configure(api_key=api_key)
 
 class SentimentEngine:
+
     @staticmethod
+    @st.cache_data(ttl=86400)  # 86400 segundos = 1 dia
     def get_market_sentiment(ticker):
         try:
             # 1. Coleta de notícias
@@ -23,10 +25,13 @@ class SentimentEngine:
                 titulos = [e.title for e in feed.entries[:5]]
                 contexto = "\n- ".join(titulos)
 
-            # 2. IA Gemini (Usando o 2.5 que validamos no seu Mac)
+            # 2. IA Gemini
             model = genai.GenerativeModel('gemini-2.5-flash')
             
-            prompt = f"Analise o sentimento para {ticker}: {contexto}. Responda apenas: SCORE: [0-100], RESUMO: [máximo 10 palavras]"
+            prompt = (
+                f"Analise o sentimento para {ticker}: {contexto}. "
+                "Responda apenas: SCORE: [0-100], RESUMO: [máximo 10 palavras]"
+            )
             
             response = model.generate_content(prompt)
             texto = response.text

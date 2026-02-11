@@ -1,0 +1,13 @@
+services:
+  app-radar:
+    image: radar
+    container_name: app-radar
+    ports:
+      - "8080:80" # Mantém para você acessar via localhost:8080 se quiser
+
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    command: tunnel --url http://app-radar:80 # Aqui usa a porta interna (80)
+    restart: always
+    depends_on:
+      - app-radar
