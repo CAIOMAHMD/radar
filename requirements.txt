@@ -1,0 +1,11 @@
+pandas
+requests
+lxml
+openpyxl
+yfinance
+streamlit
+beautifulsoup4
+html5lib
+feedparser
+textblob
+google-generativeai>=0.8.3
